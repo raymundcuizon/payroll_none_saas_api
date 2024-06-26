@@ -8,5 +8,9 @@ export const configValidationSchema = Joi.object({
   DB_USERNAME: Joi.string().required(),
   DB_PASSWORD: Joi.string().required(),
   DB_DATABASE: Joi.string().required(),
-  // JWT_SECRET: Joi.string().required(),
+  AWS_COGNITO_USERPOOL_ID: Joi.string().required(),
+  AWS_COGNITO_CLIENTID: Joi.string().required(),
+  AWS_REGION: Joi.string().required(),
+  AWS_accessKeyId: Joi.string().required(),
+  AWS_secretAccessKey: Joi.string().required(),
 });
