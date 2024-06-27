@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { configValidationSchema } from './config.schema';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { AgencyModule } from './agency/agency.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UsersModule } from './users/users.module';
     }),
     AuthModule,
     UsersModule,
+    AgencyModule,
   ],
   controllers: [AppController],
   providers: [AppService],

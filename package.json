@@ -40,6 +40,7 @@
     "jwks-rsa": "^3.1.0",
     "mysql2": "^3.10.1",
     "nestjs-joi": "^1.10.0",
+    "nestjs-typeorm-paginate": "^4.0.4",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",

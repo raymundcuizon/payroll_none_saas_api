@@ -161,7 +161,7 @@ export class AuthService {
   async adminConfirmUser() {
     const params = {
       UserPoolId: this.userPoolId,
-      Username: 'raymund.gss@gmail.com',
+      Username: 'ryanjeric@gmail.com',
     };
 
     try {
@@ -170,20 +170,20 @@ export class AuthService {
         .promise();
       console.log('User confirmed successfully:', confirm);
 
-      const x = {
-        UserPoolId: this.userPoolId,
-        Username: 'raymund.gss@gmail.com',
-        UserAttributes: [
-          {
-            Name: 'email_verified',
-            Value: 'true',
-          },
-        ],
-      };
-      const verified = await this.cognitoIdentityServiceProvider
-        .adminUpdateUserAttributes(x)
-        .promise();
-      console.log('Email verified successfully:', verified);
+      // const x = {
+      //   UserPoolId: this.userPoolId,
+      //   Username: 'raymund.gss@gmail.com',
+      //   UserAttributes: [
+      //     {
+      //       Name: 'email_verified',
+      //       Value: 'true',
+      //     },
+      //   ],
+      // };
+      // const verified = await this.cognitoIdentityServiceProvider
+      //   .adminUpdateUserAttributes(x)
+      //   .promise();
+      // console.log('Email verified successfully:', verified);
     } catch (error) {
       console.error('Error confirming user:', error);
     }
