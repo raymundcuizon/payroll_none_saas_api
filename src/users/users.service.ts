@@ -1,4 +1,6 @@
 import {
+  HttpException,
+  HttpStatus,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -28,6 +30,40 @@ export class UsersService {
     } catch (error) {
       this.logger.error(error);
       throw new InternalServerErrorException();
+    }
+  }
+
+  async verifyUserEmail(email: string) {
+    try {
+      const updateAgency = await this.userRepository.update(
+        { email },
+        {
+          email_vefiried: true,
+        },
+      );
+
+      if (!updateAgency.affected)
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException(error);
+    }
+  }
+
+  async adminConfirmUser(email: string) {
+    try {
+      const updateAgency = await this.userRepository.update(
+        { email },
+        {
+          account_confirmed: true,
+        },
+      );
+
+      if (!updateAgency.affected)
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException(error);
     }
   }
 

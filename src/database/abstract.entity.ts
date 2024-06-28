@@ -1,4 +1,5 @@
 import {
+  Column,
   CreateDateColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -20,6 +21,11 @@ export class AbstractEntity<T> {
     onUpdate: 'CURRENT_TIMESTAMP(6)',
   })
   updated_at: Date;
+
+  @Column({
+    default: false,
+  })
+  is_deleted: boolean;
 
   constructor(entity: Partial<T>) {
     Object.assign(this, entity);

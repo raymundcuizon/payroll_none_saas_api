@@ -5,6 +5,8 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
+  Patch,
   Post,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -37,10 +39,10 @@ export class AuthController {
     return await this.authService.registerUser(dto);
   }
 
-  @Post('confirmRegistration')
-  async confirmRegistration() {
-    return await this.authService.confirmRegistration();
-  }
+  // @Post('confirmRegistration')
+  // async confirmRegistration() {
+  //   return await this.authService.confirmRegistration();
+  // }
 
   @Post('login')
   @AuthLoginDecorator()
@@ -48,18 +50,18 @@ export class AuthController {
     return this.authService.login(loginAuthDto);
   }
 
-  @Post('refreshToken')
-  async refreshToken() {
-    return await this.authService.refreshToken('SAD', 'SAD');
+  // @Post('refreshToken')
+  // async refreshToken() {
+  //   return await this.authService.refreshToken('SAD', 'SAD');
+  // }
+
+  @Patch('admin-confirm-user/:email')
+  async adminConfirmUser(@Param('email') email: string) {
+    return await this.authService.adminConfirmUser(email);
   }
 
-  @Post('adminConfirmUser')
-  async adminConfirmUser() {
-    return await this.authService.adminConfirmUser();
-  }
-
-  @Post('verifyUserEmail')
-  async verifyUserEmail() {
-    return await this.authService.verifyUserEmail('raymundcuizon@gmail.com');
+  @Patch('verify-user-email/:email')
+  async verifyUserEmail(@Param('email') email: string) {
+    return await this.authService.verifyUserEmail(email);
   }
 }

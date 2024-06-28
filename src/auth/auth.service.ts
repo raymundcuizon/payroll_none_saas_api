@@ -18,6 +18,7 @@ import { UsersService } from 'src/users/users.service';
 import { AuthUserRegisterDto } from './dto/auth-user-register.dto';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 const AWS = require('aws-sdk');
+// import AWS from 'aws-sdk';
 
 @Injectable()
 export class AuthService {
@@ -136,56 +137,43 @@ export class AuthService {
       });
   }
 
-  async verifyUserEmail(username) {
-    const params = {
-      UserPoolId: this.userPoolId,
-      Username: username,
-      UserAttributes: [
-        {
-          Name: 'email_verified',
-          Value: 'true',
-        },
-      ],
-    };
-
+  async verifyUserEmail(email) {
     try {
+      const params = {
+        UserPoolId: this.userPoolId,
+        Username: email,
+        UserAttributes: [
+          {
+            Name: 'email_verified',
+            Value: 'true',
+          },
+        ],
+      };
       const result = await this.cognitoIdentityServiceProvider
         .adminUpdateUserAttributes(params)
         .promise();
-      console.log('Email verified successfully:', result);
+
+      await this.usersService.verifyUserEmail(email);
     } catch (error) {
-      console.error('Error verifying email:', error);
+      this.logger.error(error);
+      throw new InternalServerErrorException(error);
     }
   }
 
-  async adminConfirmUser() {
+  async adminConfirmUser(email: string) {
     const params = {
       UserPoolId: this.userPoolId,
-      Username: 'ryanjeric@gmail.com',
+      Username: email,
     };
 
     try {
       const confirm = await this.cognitoIdentityServiceProvider
         .adminConfirmSignUp(params)
         .promise();
-      console.log('User confirmed successfully:', confirm);
-
-      // const x = {
-      //   UserPoolId: this.userPoolId,
-      //   Username: 'raymund.gss@gmail.com',
-      //   UserAttributes: [
-      //     {
-      //       Name: 'email_verified',
-      //       Value: 'true',
-      //     },
-      //   ],
-      // };
-      // const verified = await this.cognitoIdentityServiceProvider
-      //   .adminUpdateUserAttributes(x)
-      //   .promise();
-      // console.log('Email verified successfully:', verified);
+      await this.usersService.adminConfirmUser(email);
     } catch (error) {
-      console.error('Error confirming user:', error);
+      this.logger.error('adminConfirmUser-err ' + error.message);
+      throw new InternalServerErrorException(error);
     }
   }
 

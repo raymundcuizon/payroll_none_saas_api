@@ -1,4 +1,5 @@
 import { AbstractEntity } from 'src/database/abstract.entity';
+import { Employee } from 'src/employee/entities/employee.entity';
 import {
   Entity,
   Column,
@@ -63,4 +64,17 @@ export class User extends AbstractEntity<User> {
 
   @Column()
   address: string;
+
+  @Column({
+    default: false,
+  })
+  account_confirmed: boolean;
+
+  @Column({
+    default: false,
+  })
+  email_vefiried: boolean;
+
+  @OneToOne(() => Employee, (employee) => employee.user)
+  employee: Employee;
 }
