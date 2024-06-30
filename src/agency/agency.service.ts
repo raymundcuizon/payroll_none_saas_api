@@ -8,9 +8,14 @@ import {
 } from '@nestjs/common';
 import { CreateAgencyDto } from './dto/create-agency.dto';
 import { UpdateAgencyDto } from './dto/update-agency.dto';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Like, Repository } from 'typeorm';
 import { Agency } from './entities/agency.entity';
-import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
+import {
+  IPaginationOptions,
+  Pagination,
+  paginate,
+} from 'nestjs-typeorm-paginate';
+import { AgencyFilter } from './dto/agency-filter.dto';
 
 @Injectable()
 export class AgencyService {
@@ -28,19 +33,41 @@ export class AgencyService {
       const userCreate = await this.agencyRepository.save(user);
       return userCreate;
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(`${this.create.name} -- ${error}`);
       throw new InternalServerErrorException();
     }
   }
 
-  async findAll(options: IPaginationOptions) {
-    const queryBuilder = this.agencyRepository
-      .createQueryBuilder('agency')
-      .orderBy('agency.id', 'ASC');
+  async findAll(options: IPaginationOptions, filter: AgencyFilter) {
+    const whereConditions: Record<string, any>[] = [];
 
-    const paginatedResult = await paginate<Agency>(queryBuilder, options);
+    whereConditions.push({
+      is_deleted: false,
+    });
 
-    return paginatedResult;
+    if (filter.name) {
+      whereConditions.push({
+        name: Like(`%${filter.name}%`),
+      });
+    }
+
+    const paginationResult: Pagination<Agency> = await paginate(
+      this.agencyRepository,
+      options,
+      {
+        where: {
+          ...whereConditions.reduce(
+            (acc, condition) => ({ ...acc, ...condition }),
+            {},
+          ),
+        },
+        order: {
+          created_at: 'DESC',
+        },
+      },
+    );
+
+    return paginationResult;
   }
 
   async findOne(id: number) {
@@ -60,7 +87,7 @@ export class AgencyService {
       if (!updateAgency.affected)
         throw new HttpException('Agency not found', HttpStatus.NOT_FOUND);
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(`${this.update.name} -- ${error}`);
       throw new InternalServerErrorException(error);
     }
   }
@@ -70,6 +97,7 @@ export class AgencyService {
       const client = await this.agencyRepository.delete(id);
       if (client.affected) return true;
     } catch (error) {
+      this.logger.error(`${this.remove.name} -- ${error}`);
       throw new InternalServerErrorException();
     }
     return false;

@@ -29,7 +29,7 @@ export class DeductionService {
       const response = await this.deductionRepository.save(newData);
       return response;
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(`${this.create.name} -- ${error}`);
       throw new InternalServerErrorException();
     }
   }
@@ -61,7 +61,7 @@ export class DeductionService {
       if (!update.affected)
         throw new HttpException('Data not found', HttpStatus.NOT_FOUND);
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(`${this.update.name} -- ${error}`);
       throw new InternalServerErrorException(error);
     }
   }
@@ -71,6 +71,7 @@ export class DeductionService {
       const remove = await this.deductionRepository.delete(id);
       if (remove.affected) return true;
     } catch (error) {
+      this.logger.error(`${this.remove.name} -- ${error}`);
       throw new InternalServerErrorException();
     }
     return false;

@@ -13,9 +13,10 @@ import {
 import { AgencyService } from './agency.service';
 import { CreateAgencyDto } from './dto/create-agency.dto';
 import { UpdateAgencyDto } from './dto/update-agency.dto';
-import { ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { CreateAgencyDecorator } from './decorators';
 import { Authentication } from '@nestjs-cognito/auth';
+import { AgencyFilter } from './dto/agency-filter.dto';
 
 @Controller('agency')
 @ApiTags('agency')
@@ -31,17 +32,29 @@ export class AgencyController {
   }
 
   @Get()
+  @ApiQuery({
+    name: 'name',
+    required: false,
+  })
   findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+    @Query('name') name?: string,
   ) {
     limit = limit > 100 ? 100 : limit;
 
-    return this.agencyService.findAll({
-      page,
-      limit,
-      route: '/',
-    });
+    const filter: AgencyFilter = {
+      name,
+    };
+
+    return this.agencyService.findAll(
+      {
+        page,
+        limit,
+        route: '/',
+      },
+      filter,
+    );
   }
 
   @Get(':id')

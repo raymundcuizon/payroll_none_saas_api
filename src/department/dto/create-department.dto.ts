@@ -12,7 +12,7 @@ export class CreateDepartmentDto {
 
   @IsNumber()
   @ApiProperty({
-    type: String,
+    type: Number,
     description: 'agency_id',
     default: 1,
   })
