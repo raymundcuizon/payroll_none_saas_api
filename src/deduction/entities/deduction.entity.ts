@@ -10,7 +10,10 @@ export class Deduction extends AbstractEntity<Deduction> {
   @Column()
   agency_id: number;
 
-  @Column()
+  @Column({
+    nullable: true,
+    type: 'text',
+  })
   description: string;
 
   @ManyToOne(() => Agency, (x) => x.allowances)

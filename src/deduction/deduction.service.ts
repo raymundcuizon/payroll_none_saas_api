@@ -1,8 +1,16 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { CreateDeductionDto } from './dto/create-deduction.dto';
 import { UpdateDeductionDto } from './dto/update-deduction.dto';
 import { DataSource, Repository } from 'typeorm';
 import { Deduction } from './entities/deduction.entity';
+import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class DeductionService {
@@ -14,23 +22,57 @@ export class DeductionService {
     private deductionRepository: Repository<Deduction>,
   ) {}
 
-  create(createDeductionDto: CreateDeductionDto) {
-    return 'This action adds a new deduction';
+  async create(dto: CreateDeductionDto) {
+    const newData = new Deduction({ ...dto });
+
+    try {
+      const response = await this.deductionRepository.save(newData);
+      return response;
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException();
+    }
   }
 
-  findAll() {
-    return `This action returns all deduction`;
+  async findAll(options: IPaginationOptions) {
+    const queryBuilder = this.deductionRepository
+      .createQueryBuilder()
+      .orderBy('id', 'ASC');
+
+    const paginatedResult = await paginate<Deduction>(queryBuilder, options);
+
+    return paginatedResult;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} deduction`;
+  async findOne(id: number) {
+    const response = await this.deductionRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    return response;
   }
 
-  update(id: number, updateDeductionDto: UpdateDeductionDto) {
-    return `This action updates a #${id} deduction`;
+  async update(id: number, dto: UpdateDeductionDto): Promise<void> {
+    try {
+      const update = await this.deductionRepository.update({ id }, dto);
+
+      if (!update.affected)
+        throw new HttpException('Data not found', HttpStatus.NOT_FOUND);
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException(error);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} deduction`;
+  async remove(id: number): Promise<boolean> {
+    try {
+      const remove = await this.deductionRepository.delete(id);
+      if (remove.affected) return true;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+    return false;
   }
 }

@@ -10,7 +10,10 @@ export class Allowance extends AbstractEntity<Allowance> {
   @Column()
   agency_id: number;
 
-  @Column()
+  @Column({
+    nullable: true,
+    type: 'text',
+  })
   description: string;
 
   @ManyToOne(() => Agency, (x) => x.allowances)

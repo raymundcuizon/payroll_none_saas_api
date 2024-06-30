@@ -1,8 +1,16 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
 import { DataSource, Repository } from 'typeorm';
 import { Position } from './entities/position.entity';
+import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class PositionService {
@@ -14,23 +22,57 @@ export class PositionService {
     private positionRepository: Repository<Position>,
   ) {}
 
-  create(createPositionDto: CreatePositionDto) {
-    return 'This action adds a new position';
+  async create(dto: CreatePositionDto) {
+    const newData = new Position({ ...dto });
+
+    try {
+      const response = await this.positionRepository.save(newData);
+      return response;
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException();
+    }
   }
 
-  findAll() {
-    return `This action returns all position`;
+  async findAll(options: IPaginationOptions) {
+    const queryBuilder = this.positionRepository
+      .createQueryBuilder()
+      .orderBy('id', 'ASC');
+
+    const paginatedResult = await paginate<Position>(queryBuilder, options);
+
+    return paginatedResult;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} position`;
+  async findOne(id: number) {
+    const response = await this.positionRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    return response;
   }
 
-  update(id: number, updatePositionDto: UpdatePositionDto) {
-    return `This action updates a #${id} position`;
+  async update(id: number, dto: UpdatePositionDto): Promise<void> {
+    try {
+      const update = await this.positionRepository.update({ id }, dto);
+
+      if (!update.affected)
+        throw new HttpException('Data not found', HttpStatus.NOT_FOUND);
+    } catch (error) {
+      this.logger.error(error);
+      throw new InternalServerErrorException(error);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} position`;
+  async remove(id: number): Promise<boolean> {
+    try {
+      const remove = await this.positionRepository.delete(id);
+      if (remove.affected) return true;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
+    return false;
   }
 }
