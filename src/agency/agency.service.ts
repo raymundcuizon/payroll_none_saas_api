@@ -55,6 +55,7 @@ export class AgencyService {
       this.agencyRepository,
       options,
       {
+        relations: ['positions', 'allowances', 'deductions'],
         where: {
           ...whereConditions.reduce(
             (acc, condition) => ({ ...acc, ...condition }),

@@ -9,5 +9,6 @@ import { DatabaseModule } from 'src/database/database.module';
   imports: [DatabaseModule],
   controllers: [DeductionController],
   providers: [DeductionService, ...deductionProviders],
+  exports: [DeductionService],
 })
 export class DeductionModule {}

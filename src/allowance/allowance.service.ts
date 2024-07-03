@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { CreateAllowanceDto } from './dto/create-allowance.dto';
 import { UpdateAllowanceDto } from './dto/update-allowance.dto';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import { Allowance } from './entities/allowance.entity';
 import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
 
@@ -48,6 +48,17 @@ export class AllowanceService {
     const response = await this.allowanceRepository.findOne({
       where: {
         id,
+      },
+    });
+
+    return response;
+  }
+
+  async findWhereAgencID_IdIn(agency_id: number, ids: number[]) {
+    const response = await this.allowanceRepository.find({
+      where: {
+        id: In(ids),
+        agency_id,
       },
     });
 

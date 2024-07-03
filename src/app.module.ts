@@ -11,6 +11,8 @@ import { EmployeeModule } from './employee/employee.module';
 import { PositionModule } from './position/position.module';
 import { AllowanceModule } from './allowance/allowance.module';
 import { DeductionModule } from './deduction/deduction.module';
+import { AttendanceModule } from './attendance/attendance.module';
+import { PayrollModule } from './payroll/payroll.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { DeductionModule } from './deduction/deduction.module';
     PositionModule,
     AllowanceModule,
     DeductionModule,
+    AttendanceModule,
+    PayrollModule,
   ],
   controllers: [AppController],
   providers: [AppService],

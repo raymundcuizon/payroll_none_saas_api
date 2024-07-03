@@ -1,5 +1,6 @@
 import { Agency } from 'src/agency/entities/agency.entity';
 import { AbstractEntity } from 'src/database/abstract.entity';
+import { Employee } from 'src/employee/entities/employee.entity';
 import { Column, Entity, JoinColumn, ManyToMany, ManyToOne } from 'typeorm';
 
 @Entity()
@@ -20,6 +21,6 @@ export class Deduction extends AbstractEntity<Deduction> {
   @JoinColumn({ name: 'agency_id' })
   agency: Agency;
 
-  //   @ManyToMany(() => Employee, (employee) => employee.allowances)
-  //   employees: Employee[];
+  @ManyToMany(() => Employee, (employee) => employee.deductions)
+  deductions: Employee[];
 }

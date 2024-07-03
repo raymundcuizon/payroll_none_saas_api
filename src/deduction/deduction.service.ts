@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { CreateDeductionDto } from './dto/create-deduction.dto';
 import { UpdateDeductionDto } from './dto/update-deduction.dto';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import { Deduction } from './entities/deduction.entity';
 import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
 
@@ -48,6 +48,17 @@ export class DeductionService {
     const response = await this.deductionRepository.findOne({
       where: {
         id,
+      },
+    });
+
+    return response;
+  }
+
+  async findWhereAgencID_IdIn(agency_id: number, ids: number[]) {
+    const response = await this.deductionRepository.find({
+      where: {
+        id: In(ids),
+        agency_id,
       },
     });
 
